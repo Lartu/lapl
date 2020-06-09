@@ -25,9 +25,8 @@ display lf "--- [ DISAN COUNT ] ---" lf;
 $n = 18;
 while $n >= 0
 {
-    if $n % 2 == 0 {
-        display $n " es par!" lf;
-    }
+    if $n % 2 == 0 display $n " es par!" lf;
+    
     $n = $n - 1;
 }
 
