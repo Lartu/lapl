@@ -1,0 +1,117 @@
+display "--- [ COUNTER ] ---" lf;
+$counter = 0;
+while $counter < 10
+{
+    display $counter lf;
+    $counter = $counter + 1;
+}
+
+display lf "--- [ FIBONACCI ] ---" lf;
+$a = 0;
+$b = 1;
+display $a lf;
+display $b lf;
+$n = 0;
+while $n < 10
+{
+    $swap = $a;
+    $a = $b;
+    $b = $b + $swap;
+    display $b lf;
+    $n = $n + 1;
+}
+
+display lf "--- [ DISAN COUNT ] ---" lf;
+$n = 18;
+while $n >= 0
+{
+    if $n % 2 == 0 {
+        display $n " es par!" lf;
+    }
+    $n = $n - 1;
+}
+
+/*{
+    display ("Hola" & " Todo bien?\n")&"Bueno chau!\n" "Ahora sí chau\n";
+    display (floor 1.2 ** 3 * 3)/0.55 " es el resultado!\n";
+    display num ("12" & str(2)) / floor 2.2 "\n";
+    display "lartu"[1] "\n";
+    display "This is " "lartu"[1,3] ", I'm a " str 10*10 & "%" " sure \n";
+    display true "\n";
+    display false "\n";
+    display true and true "\n";
+    display false and false "\n";
+    display true and false "\n";
+    display false and true "\n";
+    display true or true "\n";
+    display false or false "\n";
+    display true or false "\n";
+    display false or true "\n";
+    display false or true and true "\n";
+    display (false and true) or false "\n";
+    display not true lf;
+    display not false lf;
+    display "-----------------" & crlf;
+    display 1 > 2 lf;
+    display 22 > num "12" lf;
+    display 4 < 2 lf;
+    display 33 < 44 lf;
+    display not 33 < 44 lf;
+    display "Zapallitos" > "roberto" crlf;
+    //exit 15;
+    ;;;;;;;;;;;;;;;
+    display lf lf lf;
+    display "Test Iva:";
+    display ((4.83 * 10000) * 0.01) " es el 1%" lf;
+    display ((4.83 * 10000) * 0.01) + (((4.83 * 10000) * 0.01) * 0.21) " es el 1% + IVA" lf;
+    display ((4.83 * 10000) * (0.08/100)) " es el 0.08%" lf;
+    display ((4.83 * 10000) * (0.08/100)) + (((4.83 * 10000) * (0.08/100)) * 0.21) " es el 0.08% + IVA" lf;
+    display ((4.83 * 10000) * 0.01) + (((4.83 * 10000) * 0.01) * 0.21) + ((4.83 * 10000) * (0.08/100)) + (((4.83 * 10000) * (0.08/100)) * 0.21) " es el (1% + IVA) + (0.08% + IVA)" lf;
+
+    $variable = "noit se come los mocos";
+    $noit = $variable;
+    display "Type: " type $noit lf;
+    display $noit & "!!!" lf;
+    $noit = 123;
+    display "Type: " type $noit lf;
+    display str $noit & "!!!" lf;
+    display $noit * 2 lf;
+    {
+        $factor = 17;
+        display $noit * $factor " is the factor" lf;
+    }
+    //display $factor lf;
+}
+
+FUNCION
+
+DE
+
+SUMA
+
+fun sumar($a, $b)
+{
+    return $a + $b;
+}
+
+# FizzBuzz in LAPL
+$n = 0;
+while $n < 100
+{
+    if $n % 15 == 0
+        display "FizzBuzz";
+    else if $n % 3 == 0
+        display "Fizz";
+    else if $n % 5 == 0
+    {
+        display "Buzz";
+    }
+    else
+    {
+        display $n;
+    }
+    display "\n";
+    #$n = sumar($n, 1);
+    #display $n & "hola?";
+    $n = $n + 1;
+}

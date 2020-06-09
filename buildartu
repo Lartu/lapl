@@ -1,0 +1,13 @@
+clear
+
+#libantlr4-runtime-dev
+
+shopt -s expand_aliases
+source ~/.bashrc
+
+./cleanartu
+antlr4 -Dlanguage=Cpp -no-listener -visitor lapl.g4 || exit
+
+c++ lapl.cpp -o lapl --std=c++11 -I"/home/martu/Desktop/Proyectos/2_Lenguajes/AntlrCPP Experiments/AntlrCPP/run/usr/local/include/antlr4-runtime" -L"/home/martu/Desktop/Proyectos/2_Lenguajes/AntlrCPP Experiments/AntlrCPP/run/usr/local/lib" -l:libantlr4-runtime.a && clear
+
+./lapl "~/Desktop/Link to LAPL/test/test.lapl"
