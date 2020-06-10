@@ -1,9 +1,9 @@
 // --- Includes ---
 #include <iostream>
-#include "/home/martu/Desktop/Proyectos/2_Lenguajes/AntlrCPP Experiments/AntlrCPP/run/usr/local/include/antlr4-runtime/antlr4-runtime.h"
-#include "laplLexer.cpp"
-#include "laplParser.cpp"
-#include "laplVisitor.cpp"
+#include "antlr4-runtime.h"
+#include "antlrFiles/laplLexer.cpp"
+#include "antlrFiles/laplParser.cpp"
+#include "antlrFiles/laplVisitor.cpp"
 #include <string>
 #include <regex>
 #include <iostream>
