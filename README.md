@@ -26,7 +26,7 @@ sayHello("LAPL");
 // "Hello, LAPL!"
 ```
 
-### Why another language? Why should I care?
+### :recycle: Why another language? Why should I care?
 
 We probably don't need another general purpose scripting language. That's the truth. But that shouldn't stop us from developing the languages that we'd like to use. 
 
@@ -45,20 +45,20 @@ to the project would have a **huge impact**. You could also help mould the langu
   <br><small><i>Rawrrr!</i></small>
 </p>
 
-# Building LAPL
+## :wrench: Building LAPL
 Build LAPL requires:
 - `java`
 - `c++11`
 
 Everything else is included in the box. Clone this repository, go into the cloned folder and run `make`.
 
-## Contributing
+## :seedling: Contributing
 
 There are many ways to contribute to the LAPL project. You can add new features, fix bugs, submit issues, write examples, write software in LAPL, write LAPL libraries, etc. At this point, everything is welcome! Even telling your friends about LAPL is a very useful contribution.
 
 If you want to talk to the rest of us, you can find the LAPL community via IRC on [irc.freenode.net](http://irc.freenode.net/), channel *\#lapl*. Also on Telegram via the [lapllang](https://t.me/lapllang) group. The IRC and Telegram channels are bridged. You are welcome to open new LAPL channels anywhere else if you like.
 
-# Learn LAPL in Y minutes!
+## :books: Learn LAPL in Y minutes!
 
 I said in the previous sections that LAPL is very easy to learn (assuming you've coded in other language before). This is a
 quick tour of the language:
@@ -262,11 +262,11 @@ exit 1; // Exit can also take an exit code.
 That's all there is. You may have noticed that the language is still lacking many of your favorite features (and some
 basic ones, like **user input**, **lists**, **maps**, etc). LAPL needs you and any contribution helps!
 
-## Getting Help
+## :information_source: Getting Help
 
 If you have any questions regarding the LAPL project you are welcome to submit an issue to this repository and join the community channels stated in the previous sections. There are no dumb questions, just ask away.
 
-## License
+## :scroll: License
 
 The LAPL Interpreter is distributed under the Apache 2.0 License. The LAPL Dinosaur and the LAPL logo where created by [Lartu](https://github.com/Lartu) and are released under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.
 
