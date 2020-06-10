@@ -6,8 +6,8 @@ grammar lapl;
 
 MULTICOMMENT    : '/*' .*? '*/' -> skip ;
 MULTICOMMENTB   : '#*' .*? '*#' -> skip ;
-MULTICOMMENTALL : '/*' .*? EOF -> skip ;
-MULTICOMMENTALLB: '/*' .*? EOF -> skip ;
+/*MULTICOMMENTALL : '/*' .*? EOF -> skip ;
+MULTICOMMENTALLB: '/*' .*? EOF -> skip ;*/
 COMMENT         : '#' .*? '\n' -> skip ;
 COMMENTB        : '//' .*? '\n' -> skip ;
 WHITESPACE      : (' ' | '\t' | '\n' |'\r') -> skip;
@@ -61,6 +61,7 @@ MAP             : 'map' ;
 LINEFEED        : 'lf' ;
 CRLF            : 'crlf' ;
 TYPE            : 'type' ;
+VAR             : 'var';
 // </Reserved words>
 IDENTIFIER      : [a-zA-Z_] [a-zA-Z0-9_]* ;
 NUMBER          : [0-9]+ ('.' [0-9]+)? ;
@@ -100,7 +101,6 @@ line_statement
         | continue_statement
         | break_statement
         | exit_statement
-        | return_statement
         | display_statement
         ) SEMICOLON
         ;
@@ -138,12 +138,12 @@ string_expression
         | string_expression CONCAT_OP string_expression
         | LPAR string_expression RPAR
         ; 
-/*array //TODO revisar
+/*array //TODO check
         : ARRAY
         | VARIABLE INDEX_ACCESS_O value INDEX_ACCESS_C
         | function_call INDEX_ACCESS_O value INDEX_ACCESS_C
         ;
-map //TODO revisar
+map //TODO check
         : MAP
         | VARIABLE BLOCK_OPEN value BLOCK_CLOSE
         | function_call BLOCK_OPEN value BLOCK_CLOSE
@@ -160,6 +160,7 @@ map_expression
         ;*/
 value
         : VARIABLE
+        | function_call
         | string_expression
         | number_expression
         | boolean_expr
@@ -167,11 +168,13 @@ value
         //| map_expression
         ;
 argument
-        : REF_OP VARIABLE
-        | value
+        : value
+        //| REF_OP VARIABLE
         ;
 assignment
         : VARIABLE ASSIGN_OP value
+        | VAR VARIABLE ASSIGN_OP value
+        | VAR VARIABLE
         //| VARIABLE INDEX_ACCESS_O value INDEX_ACCESS_C ASSIGN_OP value
         ;
 function_call
@@ -222,10 +225,7 @@ exit_statement
         | EXIT number_expression
         ;
 function_declaration
-        : FUNCTION IDENTIFIER LPAR (VARIABLE (COMMA VARIABLE)*)? RPAR  statement
-        ;
-return_statement
-        : RETURN value?
+        : FUNCTION IDENTIFIER LPAR (VARIABLE (COMMA VARIABLE)*)? RPAR statement
         ;
 display_statement
         : DISPLAY display_values
@@ -239,5 +239,16 @@ TODO:
 accept
 arrays
 maps
+pasaje por referencia de maps y arrays
+copia de maps y arrays
 operador ternario
+include
+SCRIPTDIR
+try
+except (y try solo sin except)
+for
+for each
+namespaces
+sleep
+execute
 */

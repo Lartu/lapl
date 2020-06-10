@@ -26,24 +26,72 @@ const string VERSIONNAME = "Amazing Archaeopteryx";
 #define TYPE_NUMBER  1
 #define TYPE_BOOLEAN 2
 #define LAPL_NUMBER_EPSILON 0.00000001
+#define EXCEPTION_CONTINUE 0
+#define EXCEPTION_BREAK 1
 
 // --- Custom Types ---
 typedef double lapl_number;
 typedef char lapl_type;
+class lapl_variable;
+class lapl_function;
 
+
+// --- Global Variables ---
+vector<unordered_map<string, lapl_variable>> variable_scope;
+vector<unordered_map<string, lapl_function>> function_scope;
+
+// --- Function Declarations ---
+string expandPath(const string & input);
+string parseArguments(int argc, const char* argv[]);
+string loadFileContents(const string & path);
+void error(const string & msg);
+lapl_number stoln(const string & str);
+string to_lapl_string(const lapl_number x);
+void displayVersionInformation();
+lapl_type getValueType(const antlrcpp::Any & type);
+void declareVariable(const string & var_name, const antlrcpp::Any & value);
+void setVariable(const string & var_name, const antlrcpp::Any & value);
+void addVariableScope();
+void delVariableScope();
+void addFunctionScope();
+void delFunctionScope();
+bool variableExists(const string & var_name);
+lapl_variable & getVariable(const string & var_name);
+void setFunction(const string & function_name, const vector<string> & parameters, tree::ParseTree * execution_tree);
+lapl_function & getFunction(const string & function_name);
+void printFunctionScope();
+void printVariableScope();
+
+// --- Class Definitions ---
 class lapl_variable
 {
     private:
     // All variables default to false.
-    lapl_type type = 2;
+    lapl_type type = TYPE_BOOLEAN;
     antlrcpp::Any value = make_shared<bool>(false);
+    lapl_number number_value;
 
     public:
-    void setType(lapl_type type){
-        this->type = type;
-    }
     void setValue(antlrcpp::Any value)
     {
+        this->type = getValueType(value);
+        /*if (this->type == TYPE_STRING)
+        {
+            this->value = make_shared<string>(
+                *value.as<shared_ptr<string>>()
+            );
+        }
+        else if (this->type == TYPE_NUMBER)
+        {
+            this->number_value = *value.as<shared_ptr<lapl_number>>();
+            this->value = make_shared<lapl_number>(this->number_value);
+        }
+        else if (this->type == TYPE_BOOLEAN)
+        {
+            this->value = make_shared<bool>(
+                *value.as<shared_ptr<bool>>()
+            );
+        }*/
         this->value = value;
     }
     antlrcpp::Any getValue()
@@ -56,23 +104,34 @@ class lapl_variable
     }
 };
 
-// --- Global Variables ---
-vector<unordered_map<string, lapl_variable>> variable_scope;
+class lapl_function
+{
+    private:
+    vector<string> parameters;
+    tree::ParseTree * execution_tree;
 
-// --- Function Declarations ---
-string expandPath(const string & input);
-string parseArguments(int argc, const char* argv[]);
-string loadFileContents(const string & path);
-void error(const string & msg);
-lapl_number stoln(const string & str);
-string to_lapl_string(const lapl_number x);
-void displayVersionInformation();
-lapl_type getValueType(const antlrcpp::Any & type);
-void setVariable(const string & var_name, const antlrcpp::Any & value);
-void addVariableScope();
-void delVariableScope();
-bool variableExists(const string & var_name);
-lapl_variable & getVariable(const string & var_name);
+    public:
+    void define(const vector<string> & parameters, tree::ParseTree * execution_tree)
+    {
+        for(const string & parameter : parameters)
+        {
+            this->parameters.push_back(parameter);
+        }
+        this->execution_tree = execution_tree;
+    }
+    tree::ParseTree * getTree()
+    {
+        return this->execution_tree;
+    }
+    unsigned int parameterCount()
+    {
+        return this->parameters.size();
+    }
+    vector<string> & getParameters()
+    {
+        return this->parameters;
+    }
+};
 
 // --- Visitor Class ---
 class LaplVisitor : public laplVisitor
@@ -89,9 +148,22 @@ class LaplVisitor : public laplVisitor
 
     virtual antlrcpp::Any visitBlock(laplParser::BlockContext *context)
     {
-        addVariableScope();
-        visitChildren(context);
-        delVariableScope();
+        // while blocks, if blocks and functiond declarations are also blocks
+        // because they not require a ; at the end (the statement that follows
+        // them does) and thus it was simpler to make them blocks from a syntactic
+        // point of view.
+        if(context->BLOCK_OPEN() and context->BLOCK_CLOSE())
+        {
+            addVariableScope();
+            addFunctionScope();
+            visitChildren(context);
+            delFunctionScope();
+            delVariableScope();
+        }
+        else
+        {
+            visitChildren(context);
+        }
         return nullptr;
     }
 
@@ -219,7 +291,12 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->function_call())
         {
-            //TODO
+            antlrcpp::Any return_value = visit(context->function_call());
+            if(getValueType(return_value) != TYPE_NUMBER)
+            {
+                error("the returned value is not a number.");
+            }
+            return return_value;
         }
         else if (context->VARIABLE())
         {
@@ -276,7 +353,12 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->function_call())
         {
-            //TODO
+            antlrcpp::Any return_value = visit(context->function_call());
+            if(getValueType(return_value) != TYPE_STRING) 
+            {
+                error("the returned value is not a string.");
+            }
+            return return_value;
         }
         else if (context->VARIABLE())
         {
@@ -326,24 +408,83 @@ class LaplVisitor : public laplVisitor
             lapl_variable & variable = getVariable(var_name);
             return variable.getValue();      
         }
-        
+        else if (context->function_call())
+        {
+            return visit(context->function_call());
+        }
     }
 
     virtual antlrcpp::Any visitArgument(laplParser::ArgumentContext *context)
     {
-        //TODO
+        if(context->value())
+        {
+            return visit(context->value());
+        }
+        return nullptr;
     }
 
     virtual antlrcpp::Any visitAssignment(laplParser::AssignmentContext *context)
     {
-        string var_name = context->VARIABLE()->toString();
-        setVariable(var_name, visit(context->value()));
+        if(context->VARIABLE() and not context->VAR() and context->ASSIGN_OP())
+        {
+            string var_name = context->VARIABLE()->toString();
+            setVariable(var_name, visit(context->value()));
+        }
+        else if(context->VARIABLE() and context->VAR() and context->ASSIGN_OP())
+        {
+            string var_name = context->VARIABLE()->toString();
+            declareVariable(var_name, visit(context->value()));
+        }
+        else if(context->VARIABLE() and context->VAR() and not context->ASSIGN_OP())
+        {
+            string var_name = context->VARIABLE()->toString();
+            declareVariable(var_name, make_shared<bool>(false));
+        }
         return nullptr;
     }
 
     virtual antlrcpp::Any visitFunction_call(laplParser::Function_callContext *context)
     {
-        //TODO
+        string function_name = context->IDENTIFIER()->toString();
+        string function_return_name = "$" + function_name;
+        antlrcpp::Any return_value;
+        lapl_function & function = getFunction(function_name);
+        addVariableScope();
+        addFunctionScope();
+        declareVariable(function_return_name, make_shared<bool>(false));
+        size_t parameter_number = 0;
+        if(context->argument().size() != function.parameterCount())
+        {
+            error("argument count mismatch for function '" + function_name + "'.");
+        }
+        vector<string> & parameters = function.getParameters();
+        for(const auto & argument : context->argument())
+        {
+            declareVariable(parameters[parameter_number], visit(argument));
+            ++parameter_number;
+        }
+        try
+        {
+            visit(function.getTree());
+        }
+        catch(int e)
+        {
+            if (e == EXCEPTION_CONTINUE)
+            {
+                error("continue cannot be used in this context.");
+            }
+            else if(e == EXCEPTION_BREAK)
+            {
+                // Just exit the function
+            }
+            else {
+                throw e;
+            }
+        }
+        return_value = getVariable(function_return_name).getValue();
+        delFunctionScope();
+        delVariableScope();
+        return return_value;
     }
 
     virtual antlrcpp::Any visitWhile_block(laplParser::While_blockContext *context)
@@ -352,7 +493,27 @@ class LaplVisitor : public laplVisitor
         {
             bool boolean_value = *visit(context->boolean_expr()).as<shared_ptr<bool>>();
             if(!boolean_value) break;
-            else visit(context->statement());
+            else{
+                try
+                {
+                    visit(context->statement());
+                }
+                catch(int e)
+                {
+                    // Break or continue!
+                    if (e == EXCEPTION_CONTINUE)
+                    {
+                        continue;
+                    }
+                    else if(e == EXCEPTION_BREAK)
+                    {
+                        break;
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+            }
         }
         return nullptr;
     }
@@ -465,7 +626,12 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->function_call())
         {
-            //TODO
+            antlrcpp::Any return_value = visit(context->function_call());
+            if(getValueType(return_value) != TYPE_BOOLEAN)
+            {
+                error("the returned value is not a boolean.");
+            }
+            return return_value;
         }
         else if (context->VARIABLE())
         {
@@ -499,9 +665,15 @@ class LaplVisitor : public laplVisitor
         return nullptr;
     }
 
-    virtual antlrcpp::Any visitContinue_statement(laplParser::Continue_statementContext *context){}
+    virtual antlrcpp::Any visitContinue_statement(laplParser::Continue_statementContext *context)
+    {
+        throw 0;
+    }
 
-    virtual antlrcpp::Any visitBreak_statement(laplParser::Break_statementContext *context){}
+    virtual antlrcpp::Any visitBreak_statement(laplParser::Break_statementContext *context)
+    {
+        throw 1;
+    }
 
     virtual antlrcpp::Any visitExit_statement(laplParser::Exit_statementContext *context)
     {
@@ -515,12 +687,14 @@ class LaplVisitor : public laplVisitor
 
     virtual antlrcpp::Any visitFunction_declaration(laplParser::Function_declarationContext *context)
     {
-        //TODO
-    }
-
-    virtual antlrcpp::Any visitReturn_statement(laplParser::Return_statementContext *context)
-    {
-        //TODO
+        string function_name = context->IDENTIFIER()->toString();
+        vector<string> parameters;
+        for(const auto & parameter : context->VARIABLE())
+        {
+            parameters.push_back(parameter->toString());
+        }
+        setFunction(function_name, parameters, context->statement());
+        return nullptr;
     }
 
     virtual antlrcpp::Any visitDisplay_statement(laplParser::Display_statementContext *context)
@@ -569,7 +743,25 @@ int main(int argc, const char * argv[])
     LaplVisitor visitor;
 
     addVariableScope();
-    visitor.visit(tree);
+    addFunctionScope();
+    try
+    {
+        visitor.visit(tree);
+    }
+    catch(int e)
+    {
+        if (e == EXCEPTION_CONTINUE)
+        {
+            error("continue cannot be used in this context.");
+        }
+        else if(e == EXCEPTION_BREAK)
+        {
+            error("break cannot be used in this context.");
+        }
+        else {
+            throw e;
+        }
+    }
 
     return 0;
 }
@@ -703,7 +895,7 @@ lapl_type getValueType(const antlrcpp::Any & type)
     {
         return TYPE_BOOLEAN;
     }
-    error("unkown type for value, fatal error. Please report this!");
+    error("unkown type for value; very, very fatal error. Please report this!");
     return -1;
 }
 
@@ -717,24 +909,42 @@ void delVariableScope()
     variable_scope.pop_back();
 }
 
+void addFunctionScope()
+{
+    function_scope.push_back(unordered_map<string, lapl_function>());
+}
+
+void delFunctionScope()
+{
+    function_scope.pop_back();
+}
+
+void declareVariable(const string & var_name, const antlrcpp::Any & value)
+{
+    int last_scope = variable_scope.size() - 1;
+    lapl_variable & var = variable_scope[last_scope][var_name];
+    var = lapl_variable();
+    lapl_type type = getValueType(value);
+    var.setValue(value);
+}
+
 void setVariable(const string & var_name, const antlrcpp::Any & value)
 {
-    for(int scope_depth = 0; scope_depth < variable_scope.size(); ++scope_depth)
+    for(int scope_depth = variable_scope.size() - 1; scope_depth >= 0; --scope_depth)
     {
         unordered_map<string, lapl_variable> & scope = variable_scope[scope_depth];
         if(scope.find(var_name) != scope.end())
         {
             lapl_variable & var = variable_scope[scope_depth][var_name];
             lapl_type type = getValueType(value);
-            var.setType(type);
             var.setValue(value);
+            return;
         }
     }
     int last_scope = variable_scope.size() - 1;
     lapl_variable & var = variable_scope[last_scope][var_name];
     var = lapl_variable();
     lapl_type type = getValueType(value);
-    var.setType(type);
     var.setValue(value);
 }
 
@@ -759,4 +969,75 @@ lapl_variable & getVariable(const string & var_name)
         }
     }
     error("the variable '" + var_name + "' hasn't been declared in this scope.");
+}
+
+void setFunction(const string & function_name, const vector<string> & parameters, tree::ParseTree * execution_tree)
+{
+    for(int scope_depth = 0; scope_depth < function_scope.size(); ++scope_depth)
+    {
+        auto & scope = function_scope[scope_depth];
+        if(scope.find(function_name) != scope.end())
+        {
+            lapl_function & fun = function_scope[scope_depth][function_name];
+            fun.define(parameters, execution_tree);
+            return;
+        }
+    }
+    int last_scope = function_scope.size() - 1;
+    lapl_function & fun = function_scope[last_scope][function_name];
+    fun = lapl_function();
+    fun.define(parameters, execution_tree);
+}
+
+lapl_function & getFunction(const string & function_name)
+{
+    for(int scope_depth = function_scope.size() - 1; scope_depth >= 0; --scope_depth)
+    {
+        auto & scope = function_scope[scope_depth];
+        if(scope.find(function_name) != scope.end())
+        {
+            return scope[function_name];
+        }
+    }
+    error("the function '" + function_name + "' hasn't been declared in this scope.");
+}
+
+void printFunctionScope()
+{
+    cout << "--- Function Scope ---" << endl;
+    size_t depth = 0;
+    for(const auto & scope : function_scope)
+    {
+        for(const auto & tuple : scope)
+        {
+            cout << "Depth " << depth << " ";
+            for(size_t i = 1; i <= depth + 1; ++i)
+            {
+                cout << "..";
+            }
+            cout << " " << tuple.first << endl;
+        }
+        ++depth;
+    }
+    cout << "----------------------" << endl;
+}
+
+void printVariableScope()
+{
+    cout << "--- Variable Scope ---" << endl;
+    size_t depth = 0;
+    for(const auto & scope : variable_scope)
+    {
+        for(const auto & tuple : scope)
+        {
+            cout << "Depth " << depth << " ";
+            for(size_t i = 1; i <= depth + 1; ++i)
+            {
+                cout << "..";
+            }
+            cout << " " << tuple.first << endl;
+        }
+        ++depth;
+    }
+    cout << "----------------------" << endl;
 }

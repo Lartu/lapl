@@ -103,10 +103,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitReturn_statement(laplParser::Return_statementContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitDisplay_statement(laplParser::Display_statementContext *ctx) override {
     return visitChildren(ctx);
   }

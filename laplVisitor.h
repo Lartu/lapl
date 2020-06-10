@@ -63,8 +63,6 @@ public:
 
     virtual antlrcpp::Any visitFunction_declaration(laplParser::Function_declarationContext *context) = 0;
 
-    virtual antlrcpp::Any visitReturn_statement(laplParser::Return_statementContext *context) = 0;
-
     virtual antlrcpp::Any visitDisplay_statement(laplParser::Display_statementContext *context) = 0;
 
     virtual antlrcpp::Any visitDisplay_values(laplParser::Display_valuesContext *context) = 0;
