@@ -11,4 +11,3 @@ all:
 clean:
 	rm -f lapl
 	rm -rf antlrFiles
-	cd antlr

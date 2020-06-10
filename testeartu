@@ -1,8 +1,0 @@
-shopt -s expand_aliases
-source ~/.bashrc
-
-antlr4 lapl.g4 || exit
-javac lapl*.java || exit
-grun lapl lapl_source test/test.lapl -gui -tokens 
-
-sh cleanartu
