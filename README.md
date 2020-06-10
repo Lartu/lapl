@@ -35,7 +35,7 @@ LAPL is an amalgamation of the things I like the most from other programming lan
 `||` (like **Python** and **LDPL**), using the `$` sigil to highlight variables (like **PHP**), having a `display` 
 functions that lets you print multiple values of different types without having to concatenate them (like **COBOL** and
 **LDPL**), blocks delimited by `{}` (like **C** and many other languages), etc. LAPL doesn't aim to be better than any
-other language out there, it aims to be **cozy** and to work with you in a **comfortable** way.
+other language out there, it aims to be **cozy** and **comfortable** to use, while being **expandable** and **useful**.
 
 Why should you care is more up to you. LAPL is still very much in its infancy, so any **countribution** you could provide
 to the project would have a **huge impact**. You could also help mould the language into something that's useful for you too. There are so many things to do, your imagination is the only limit. But also we have a dinosaur. With a tie. This is serious
@@ -82,7 +82,7 @@ quick tour of the language:
 // can only contain characters a-Z, numbers and underscores (_).
 $foo = 10;
 $bar = "hello"; // Every statement in LAPL ends with a semicolon (;).
-$biz = true; $foobiz = true; // Multiple statements can be in a single line.
+$biz = true; $foobiz = false; // Multiple statements can be in a single line.
 
 $bar = $foo; // Variables are dynamically typed and created.
 
@@ -148,6 +148,9 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
         var $a = 999;
         // Now $a refers to a new variable $a that only exists in the scope
         // of this block and child blocks. Here, $a equals 999.
+        var $b;
+        // You can also declare variables without stating a value with the var
+        // command. Variables declared this way default to false.
     }
     // Here, $a is still equal to 999.
 }
@@ -275,6 +278,6 @@ Antlr4, included in this repository, is released and distributed under the ANTLR
 
 <p align="center">
   <img src="art/partysaur_small.png">
-  <br><small><i>Rawrrr!</i></small>
+  <br><small><i>Rawrrr again!</i></small>
 </p>
 
