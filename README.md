@@ -124,7 +124,7 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
         // Also each block has its own scope.
     }
 
-    // When variable is assigned a value within a block, if the variable DID NOT
+    // When a variable is assigned a value within a block, if the variable DID NOT
     // already exist in an outer scope, the variable will be defined only
     // for the current scope.
     {
@@ -135,7 +135,7 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
     {
         // You can access variables from outer scopes from within a block.
         display $a lf;
-        // When variable is assigned a value within a block, if the variable DID
+        // When a variable is assigned a value within a block, if the variable DID
         // exist in an outer scope, the variable from the outer scope will be 
         // modified.
         $a = 50;
@@ -152,7 +152,7 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
         // You can also declare variables without stating a value with the var
         // command. Variables declared this way default to false.
     }
-    // Here, $a is still equal to 999.
+    // Here, $a equals 999.
 }
 
 {
