@@ -12,8 +12,23 @@ but only **explicit casting**, **user-defined scoping**, **functions-within-func
 probably quite similar to a language you already know, it has been designed to run on
 Unix systems and it's very easy to learn. If you keep reading this readme, by the end of it you will be a LAPL expert.
 
-excessively expressive, readable,
-fast and easy to learn. It mimics plain English, in the likeness of the good parts of older programming languages like COBOL, with the desire that it can be understood by anybody. LDPL was designed to run on Unix systems, including AMD-64 Linux, macOS, ARMv8 Linux, Android Termux and both Intel and PowerPC OS X (tested from Tiger 10.4 onwards). It even supports UTF-8 out of the box.
+### Why another language? Why should I care?
+
+The first question is easy to answer. We probably don't need another general purpose scripting language. That's the truth. But that shouldn't stop us from developing the languages that we'd like to use. 
+
+LAPL is an amalgamation of the things I like the most from other programming languages: not having to write
+`()` in `if` and `while` guards (like **Python** and **Rust**), using `and`, `not` and `or` instead of `&&`, `!` and 
+`||` (like **Python** and **LDPL**), using the `$` sigil to highlight variables (like **PHP**), having a `display` 
+functions that lets you print multiple values of different types without having to concatenate them (like **COBOL** and
+**LDPL**), blocks delimited by `{}` (like **C** and many other languages), etc. LAPL doesn't aim to be better than any
+other language out there, it aims to be **cozy** and to work with you in a **comfortable** way.
+
+Why should you care is more up to you. LAPL is still very much in its infancy, so any **countribution** you could provide
+to the project would have a **huge impact**. You could also help mould the language into something that's useful for you too. There are so many things to do, your imagination is the only limit. But also we have a dinosaur:
+
+<p align="center">
+  <img src="art/laplsaur_small.png">
+</p>
 
 # Learn LAPL in Y minutes!
 
