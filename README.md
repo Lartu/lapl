@@ -275,6 +275,6 @@ Antlr4, included in this repository, is released and distributed under the ANTLR
 
 <p align="center">
   <img src="art/partysaur_small.png">
-  <br><small><i>Rawrrr!</i></small>
+  <br><small><i>Rawrrr again!</i></small>
 </p>
 
