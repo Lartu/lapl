@@ -1,7 +1,6 @@
 <p align="center">
+  <img src="art/lapl_logo_alt.png">
   <br><br>
-  <img src="art/lapl_logo.png">
-  <br><br><br>
   <img src="https://img.shields.io/badge/license-apache_2.0-yellow?style=flat-square">
   <img src="https://img.shields.io/badge/current_release-1.0α-blue.svg?style=flat-square">
   <a href="https://www.freenode.net"><img src="https://img.shields.io/badge/irc-%23lapl-orange?style=flat-square"></a>
