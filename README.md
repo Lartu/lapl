@@ -152,7 +152,7 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
         // You can also declare variables without stating a value with the var
         // command. Variables declared this way default to false.
     }
-    // Here, $a equals 999.
+    // Here, $a still equals 50.
 }
 
 {
