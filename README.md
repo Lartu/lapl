@@ -42,6 +42,7 @@ to the project would have a **huge impact**. You could also help mould the langu
 
 <p align="center">
   <img src="art/laplsaur_small.png">
+  <br><small><i>Rawrrr!</i></small>
 </p>
 
 # Building LAPL
