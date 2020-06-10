@@ -12,9 +12,22 @@ but only **explicit casting**, **user-defined scoping**, **functions-within-func
 probably quite similar to a language you already know, it has been designed to run on
 Unix systems and it's very easy to learn. If you keep reading this readme, by the end of it you will be a LAPL expert.
 
+```c++
+// This is a tiny LAPL example!
+
+fun sayHello($name)
+{
+    display "Hello, " $name "!" lf;
+}
+
+sayHello("LAPL");
+
+// "Hello, LAPL!"
+```
+
 ### Why another language? Why should I care?
 
-The first question is easy to answer. We probably don't need another general purpose scripting language. That's the truth. But that shouldn't stop us from developing the languages that we'd like to use. 
+We probably don't need another general purpose scripting language. That's the truth. But that shouldn't stop us from developing the languages that we'd like to use. 
 
 LAPL is an amalgamation of the things I like the most from other programming languages: not having to write
 `()` in `if` and `while` guards (like **Python** and **Rust**), using `and`, `not` and `or` instead of `&&`, `!` and 
@@ -30,7 +43,23 @@ to the project would have a **huge impact**. You could also help mould the langu
   <img src="art/laplsaur_small.png">
 </p>
 
+# Building LAPL
+Build LAPL requires:
+- `java`
+- `c++11`
+
+Everything else is included in the box. Clone this repository, go into the cloned folder and run `make`.
+
+## Contributing
+
+There are many ways to contribute to the LAPL project. You can add new features, fix bugs, submit issues, write examples, write software in LAPL, write LAPL libraries, etc. At this point, everything is welcome! Even telling your friends about LAPL is a very useful contribution.
+
+If you want to talk to the rest of us, you can find the LAPL community via IRC on [irc.freenode.net](http://irc.freenode.net/), channel *\#lapl*. Also on Telegram via the [lapllang](https://t.me/lapllang) group. The IRC and Telegram channels are bridged. You are welcome to open new LAPL channels anywhere else if you like.
+
 # Learn LAPL in Y minutes!
+
+I said in the previous sections that LAPL is very easy to learn (assuming you've coded in other language before). This is a
+quick tour of the language:
 
 ```c++
 // This is a single-line comment
@@ -227,3 +256,17 @@ exit;
 display "This code won't be executed!" lf;
 exit 1; // Exit can also take an exit code.
 ```
+
+That's all there is. You may have noticed that the language is still lacking many of your favorite features (and some
+basic ones, like **user input**, **lists**, **maps**, etc). LAPL needs you and any contribution helps!
+
+## Getting Help
+
+If you have any questions regarding the LAPL project you are welcome to submit an issue to this repository and join the community channels stated in the previous sections. There are no dumb questions, just ask away.
+
+## License
+
+The LAPL Interpreter is distributed under the Apache 2.0 License. The LAPL Dinosaur and the LAPL logo where created by [Lartu](https://github.com/Lartu) and are released under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+
+Antlr4, included in this repository, is released and distributed under the ANTLR v4 license. For more information, check the license file in the antlr directory.
+
