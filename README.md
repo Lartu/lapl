@@ -35,7 +35,7 @@ LAPL is an amalgamation of the things I like the most from other programming lan
 `||` (like **Python** and **LDPL**), using the `$` sigil to highlight variables (like **PHP**), having a `display` 
 functions that lets you print multiple values of different types without having to concatenate them (like **COBOL** and
 **LDPL**), blocks delimited by `{}` (like **C** and many other languages), etc. LAPL doesn't aim to be better than any
-other language out there, it aims to be **cozy** and to work with you in a **comfortable** way.
+other language out there, it aims to be **cozy** and **comfortable** to use, while being **expandable** and **useful**.
 
 Why should you care is more up to you. LAPL is still very much in its infancy, so any **countribution** you could provide
 to the project would have a **huge impact**. You could also help mould the language into something that's useful for you too. There are so many things to do, your imagination is the only limit. But also we have a dinosaur. With a tie. This is serious
