@@ -235,20 +235,29 @@ display_values
         ;
 
 /*
-TODO:
+FEATURES TO BE ADDED (in no particular order):
 accept
 arrays
 maps
-pasaje por referencia de maps y arrays
-copia de maps y arrays
-operador ternario
+pass by reference for maps and arrays
+copy maps and arrays
+ternary operator
 include
 SCRIPTDIR
-try
-except (y try solo sin except)
+try - except
+try without except
 for
 for each
 namespaces
 sleep
 execute
+file saving, loading and appending (and reading line by line)
+string length
+string uppercase
+string lowercase
+random number
+trigonometric functions
+fork
+mutex
+semaphores
 */

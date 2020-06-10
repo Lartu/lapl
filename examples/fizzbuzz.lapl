@@ -1,0 +1,12 @@
+# Fizzbuzz in LAPL
+# github.com/lartu/lapl
+
+$n = 0;
+while $n < 100
+{
+    if $n % 15 == 0 display "FizzBuzz!" lf;
+    else if $n % 3 == 0 display "Fizz!" lf;
+    else if $n % 5 == 0 display "Buzz!" lf;
+    else display $n lf;
+    $n = $n + 1;
+}

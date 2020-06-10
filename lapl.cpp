@@ -966,7 +966,7 @@ lapl_variable & getVariable(const string & var_name)
 
 void setFunction(const string & function_name, const vector<string> & parameters, tree::ParseTree * execution_tree)
 {
-    for(int scope_depth = 0; scope_depth < function_scope.size(); ++scope_depth)
+    /*for(int scope_depth = 0; scope_depth < function_scope.size(); ++scope_depth)
     {
         auto & scope = function_scope[scope_depth];
         if(scope.find(function_name) != scope.end())
@@ -975,7 +975,7 @@ void setFunction(const string & function_name, const vector<string> & parameters
             fun.define(parameters, execution_tree);
             return;
         }
-    }
+    }*/
     int last_scope = function_scope.size() - 1;
     lapl_function & fun = function_scope[last_scope][function_name];
     fun = lapl_function();

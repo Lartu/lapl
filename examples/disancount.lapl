@@ -1,0 +1,17 @@
+# Disan Count in LAPL
+# github.com/lartu/lapl
+
+fun disan($n)
+{
+    if $n % 2 == 0
+    {
+        display $n " is even!" lf;
+    }
+}
+
+$n = 100;
+while $n >= 0
+{
+    disan($n);
+    $n = $n - 1;
+}

@@ -1,0 +1,34 @@
+# 99 Bottles of Beer in LAPL
+# github.com/lartu/lapl
+
+$bottles = 99;
+
+fun plural($bottle_count)
+{
+    if $bottle_count != 1 
+    {
+        $plural = "bottles";
+    }
+    else
+    {
+        $plural = "bottle";
+    }
+}
+
+while $bottles > 0
+{
+    display $bottles " " plural($bottles) " of beer on the wall," lf;
+    display $bottles " " plural($bottles) " of beer." lf;
+
+    $bottles = $bottles - 1;
+
+    display "Take one down, pass it around," lf;
+
+    if $bottles == 1
+    {
+        display "No bottles of beer on the wall." lf;
+        break;
+    }
+
+    display $bottles " " plural($bottles) " of beer on the wall." lf lf;
+}

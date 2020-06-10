@@ -1,0 +1,4 @@
+# Hello World Beer in LAPL
+# github.com/lartu/lapl
+
+display "Hello World!" lf;
