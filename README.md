@@ -272,3 +272,8 @@ The LAPL Interpreter is distributed under the Apache 2.0 License. The LAPL Dinos
 
 Antlr4, included in this repository, is released and distributed under the ANTLR v4 license. For more information, check the license file in the antlr directory.
 
+<p align="center">
+  <img src="art/partysaur_small.png">
+  <br><small><i>Rawrrr!</i></small>
+</p>
+
