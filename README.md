@@ -55,7 +55,7 @@ Everything else is included in the box. Clone this repository, go into the clone
 
 ## :seedling: Contributing
 
-There are many ways to contribute to the LAPL project. You can add new features, fix bugs, submit issues, write examples, write software in LAPL, write LAPL libraries, etc. At this point, everything is welcome! Even telling your friends about LAPL is a very useful contribution.
+There are many ways to contribute to the LAPL project. You can add new features, fix bugs, submit issues, write examples, write software in LAPL, write LAPL libraries, etc. At this point, everything is welcome! Even telling your friends about LAPL is a very useful contribution. A list of wanted features can be found at the bottom of [lapl.g4](lapl.g4), but something is not on that list it doesn't mean we don't want it!
 
 If you want to talk to the rest of us, you can find the LAPL community via IRC on [irc.freenode.net](http://irc.freenode.net/), channel *\#lapl*. Also on Telegram via the [lapllang](https://t.me/lapllang) group. The IRC and Telegram channels are bridged. You are welcome to open new LAPL channels anywhere else if you like.
 
