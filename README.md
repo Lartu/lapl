@@ -82,7 +82,7 @@ quick tour of the language:
 // can only contain characters a-Z, numbers and underscores (_).
 $foo = 10;
 $bar = "hello"; // Every statement in LAPL ends with a semicolon (;).
-$biz = true; $foobiz = true; // Multiple statements can be in a single line.
+$biz = true; $foobiz = false; // Multiple statements can be in a single line.
 
 $bar = $foo; // Variables are dynamically typed and created.
 
@@ -148,6 +148,9 @@ display "The result is " $value2 " (and not " 12387 ")!" crlf;
         var $a = 999;
         // Now $a refers to a new variable $a that only exists in the scope
         // of this block and child blocks. Here, $a equals 999.
+        var $b;
+        // You can also declare variables without stating a value with the var
+        // command. Variables declared this way default to false.
     }
     // Here, $a is still equal to 999.
 }
