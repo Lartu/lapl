@@ -1,7 +1,0 @@
-WHITESPACE=1
-NOT_OP=2
-PLUS_OP=3
-MINUS_OP=4
-'!'=2
-'+'=3
-'-'=4
