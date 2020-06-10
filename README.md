@@ -7,7 +7,8 @@
   <!--<a href="https://travis-ci.org/Lartu/ldpl"><img src="https://img.shields.io/travis/Lartu/ldpl/master?style=flat-square"></a>-->
 </p>
 
-**LAPL** is an interpreted programming language designed from the ground up to be useful. It features **dynamic typing**
+**LAPL** is an interpreted, scripting programming language designed from the ground up to be predictable, useful, simple and easy to use.
+It features **dynamic typing**
 but only **explicit casting**, **user-defined scoping**, **functions-within-functions**, etc. It's expressive, it's
 probably quite similar to a language you already know, it has been designed to run on
 Unix systems and it's very easy to learn. If you keep reading this readme, by the end of it you will be a LAPL expert.
