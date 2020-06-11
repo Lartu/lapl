@@ -35,9 +35,9 @@ const string VERSIONNAME = "Amazing Archaeopteryx";
 // --- Custom Types ---
 typedef double lapl_number;
 typedef char lapl_type;
+typedef chText lapl_string;
 class lapl_variable;
 class lapl_function;
-class lapl_string;
 
 
 // --- Global Variables ---
@@ -49,8 +49,8 @@ string expandPath(const string & input);
 string parseArguments(int argc, const char* argv[]);
 string loadFileContents(const string & path);
 void error(const string & msg);
-lapl_number stoln(const string & str);
-string to_lapl_string(const lapl_number x);
+lapl_number stoln(const lapl_string & str);
+lapl_string to_lapl_string(const lapl_number x);
 void displayVersionInformation();
 lapl_type getValueType(const antlrcpp::Any & type);
 void declareVariable(const string & var_name, const antlrcpp::Any & value);
@@ -66,7 +66,8 @@ lapl_function & getFunction(const string & function_name);
 void printFunctionScope();
 void printVariableScope();
 lapl_number getRandomNumber();
-bool stringIsNumber(const string & text);
+bool stringIsNumber(const lapl_string & text);
+chText str_replace(string s, string find, string replace);
 
 // --- Class Definitions ---
 class lapl_variable
@@ -83,8 +84,8 @@ class lapl_variable
         this->type = getValueType(value);
         /*if (this->type == TYPE_STRING)
         {
-            this->value = make_shared<string>(
-                *value.as<shared_ptr<string>>()
+            this->value = make_shared<lapl_string>(
+                *value.as<shared_ptr<lapl_string>>()
             );
         }
         else if (this->type == TYPE_NUMBER)
@@ -194,24 +195,24 @@ class LaplVisitor : public laplVisitor
             replaceAll(stringValue, "\\t", "\t");
             replaceAll(stringValue, "\\\\", "\\");
             replaceAll(stringValue, "\\0", "\0");
-            shared_ptr<string> valueToReturn = make_shared<string>(stringValue);
+            shared_ptr<lapl_string> valueToReturn = make_shared<lapl_string>(lapl_string(stringValue));
             return valueToReturn;
         }
         if (context->LINEFEED())
         {
-            shared_ptr<string> valueToReturn = make_shared<string>("\n");
+            shared_ptr<lapl_string> valueToReturn = make_shared<lapl_string>(lapl_string("\n"));
             return valueToReturn;
         }
         if (context->CRLF())
         {
-            shared_ptr<string> valueToReturn = make_shared<string>("\r\n");
+            shared_ptr<lapl_string> valueToReturn = make_shared<lapl_string>(lapl_string("\r\n"));
             return valueToReturn;
         }
         else if (context->STR_OP())
         {
             lapl_number numeric_value = *visit(context->children[1]).as<shared_ptr<lapl_number>>();
-            string string_value = to_lapl_string(numeric_value);
-            shared_ptr<string> valueToReturn = make_shared<string>(string_value);
+            lapl_string string_value = to_lapl_string(numeric_value);
+            shared_ptr<lapl_string> valueToReturn = make_shared<lapl_string>(string_value);
             return valueToReturn;
         }
     }
@@ -220,13 +221,13 @@ class LaplVisitor : public laplVisitor
     {
         if (context->NUMBER())
         {
-            lapl_number numberValue = stoln(context->NUMBER()->toString());
+            lapl_number numberValue = stoln(context->getText());
             shared_ptr<lapl_number> valueToReturn = make_shared<lapl_number>(numberValue);
             return valueToReturn;
         }
         else if (context->NUM_OP())
         {
-            string string_value = *visit(context->children[1]).as<shared_ptr<string>>();
+            lapl_string string_value = *visit(context->children[1]).as<shared_ptr<lapl_string>>();
             lapl_number numeric_value = stoln(string_value);
             shared_ptr<lapl_number> valueToReturn = make_shared<lapl_number>(numeric_value);
             return valueToReturn;
@@ -328,9 +329,9 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->CONCAT_OP())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
-            return make_shared<string>(value1 + value2);
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
+            return make_shared<lapl_string>(value1 + value2);
         }
         else if (context->LPAR() and context->RPAR())
         {
@@ -338,7 +339,7 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->INDEX_ACCESS_O() and context->INDEX_ACCESS_C() and context->COMMA())
         {
-            string string_value = *visit(context->children[0]).as<shared_ptr<string>>();
+            lapl_string string_value = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
             lapl_number index_val_min = *visit(context->children[2]).as<shared_ptr<lapl_number>>();
             lapl_number index_val_max = *visit(context->children[4]).as<shared_ptr<lapl_number>>();
             if (index_val_min < 0 or index_val_min >= string_value.length())
@@ -349,17 +350,21 @@ class LaplVisitor : public laplVisitor
             {
                 error("string index out of bounds (index " + to_lapl_string(index_val_max) + " for string '" + string_value + "'.");
             }
-            return make_shared<string>(string_value.substr(index_val_min, index_val_max));
+            return make_shared<lapl_string>(string_value.substr(index_val_min, index_val_max));
         }
         else if (context->INDEX_ACCESS_O() and context->INDEX_ACCESS_C())
         {
-            string string_value = *visit(context->children[0]).as<shared_ptr<string>>();
+            lapl_string string_value = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
             lapl_number index_val = *visit(context->children[2]).as<shared_ptr<lapl_number>>();
+            if (index_val < 0)
+            {
+                index_val = string_value.length() + index_val;
+            }
             if (index_val < 0 or index_val >= string_value.length())
             {
-                error("string index out of bounds (index " + to_lapl_string(index_val) + " for string '" + string_value + "'.");
+                return make_shared<lapl_string>("");
             }
-            return make_shared<string>(string_value.substr(index_val, 1));
+            return make_shared<lapl_string>(string_value.substr(index_val, 1));
         }
         else if (context->function_call())
         {
@@ -576,38 +581,38 @@ class LaplVisitor : public laplVisitor
         }
         else if (context->EQ_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 == value2);
         }
         else if (context->NEQ_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 != value2);
         }
         else if (context->LT_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 < value2);
         }
         else if (context->GT_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 > value2);
         }
         else if (context->LE_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 <= value2);
         }
         else if (context->GE_OP() and not context->string_expression().empty())
         {
-            string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
-            string value2 = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value1 = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
+            lapl_string value2 = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(value1 >= value2);
         }
         else if (context->EQ_OP() and not context->number_expression().empty())
@@ -737,9 +742,9 @@ class LaplVisitor : public laplVisitor
         for (auto & child : context->children)
         {
             antlrcpp::Any value_to_print = visit(child);
-            if (value_to_print.is<shared_ptr<string>>())
+            if (value_to_print.is<shared_ptr<lapl_string>>())
             {
-                string string_to_print = *value_to_print.as<shared_ptr<string>>();
+                lapl_string string_to_print = *value_to_print.as<shared_ptr<lapl_string>>();
                 cout << string_to_print << flush;
             }
             else if (value_to_print.is<shared_ptr<lapl_number>>())
@@ -761,7 +766,7 @@ class LaplVisitor : public laplVisitor
         // len(string)
         if(context->BIF_LEN())
         {
-            string value = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<lapl_number>(value.length());
         }
         // random()
@@ -778,7 +783,19 @@ class LaplVisitor : public laplVisitor
         {
             string s = "";
             getline(cin, s);
-            return make_shared<string>(s);
+            lapl_string chs = s;
+            return make_shared<lapl_string>(chs);
+        }
+        // replace(string, string, string)
+        else if(context->BIF_REPLACE())
+        {
+            return make_shared<lapl_string>(
+                str_replace(
+                    *visit(context->children[2]).as<shared_ptr<lapl_string>>(), 
+                    *visit(context->children[4]).as<shared_ptr<lapl_string>>(), 
+                    *visit(context->children[6]).as<shared_ptr<lapl_string>>()
+                )
+            );
         }
     }
 
@@ -787,7 +804,7 @@ class LaplVisitor : public laplVisitor
         // isNumeric(string)
         if(context->BIF_ISNUM())
         {
-            string value = *visit(context->children[2]).as<shared_ptr<string>>();
+            lapl_string value = *visit(context->children[2]).as<shared_ptr<lapl_string>>();
             return make_shared<bool>(stringIsNumber(value));
         }
     }
@@ -911,13 +928,13 @@ void error(const string & msg)
     exit(1);
 }
 
-lapl_number stoln(const string & str)
+lapl_number stoln(const lapl_string & str)
 {
     if(stringIsNumber(str)) return stod(str);
     error("the string '" + str + "' is not numeric and cannot be converted to a number.");
 }
 
-string to_lapl_string(const lapl_number x)
+lapl_string to_lapl_string(const lapl_number x)
 {
     ostringstream out;
     out.precision(10);
@@ -943,7 +960,7 @@ void displayVersionInformation()
 
 lapl_type getValueType(const antlrcpp::Any & type)
 {
-    if (type.is<shared_ptr<string>>())
+    if (type.is<shared_ptr<lapl_string>>())
     {
         return TYPE_STRING;
     }
@@ -1110,7 +1127,7 @@ lapl_number getRandomNumber(){
     return r;
 }
 
-bool stringIsNumber(const string & text)
+bool stringIsNumber(const lapl_string & text)
 {
     try
     {
@@ -1121,4 +1138,19 @@ bool stringIsNumber(const string & text)
         return false;
     }
     return true;
+}
+
+chText str_replace(string s, string find, string replace)
+{
+    string result;
+    size_t find_len = find.size();
+    size_t pos, from=0;
+    while (string::npos != (pos=s.find(find,from)))
+    {
+        result.append(s, from, pos-from);
+        result.append(replace);
+        from = pos + find_len;
+    }
+    result.append(s, from , string::npos);
+    return result;
 }

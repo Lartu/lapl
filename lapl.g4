@@ -66,6 +66,7 @@ BIF_LEN         : 'len';
 RANDOM          : 'random';
 ACCEPT          : 'accept';
 BIF_ISNUM       : 'isNumeric';
+BIF_REPLACE     : 'replace';
 // </Reserved words>
 IDENTIFIER      : [a-zA-Z_] [a-zA-Z0-9_]* ;
 NUMBER          : [0-9]+ ('.' [0-9]+)? ;
@@ -106,6 +107,7 @@ line_statement
         | break_statement
         | exit_statement
         | display_statement
+        | value
         ) SEMICOLON
         ;
 string
@@ -150,6 +152,7 @@ builtin_number_function
         ;
 builtin_string_function
         : ACCEPT LPAR RPAR
+        | BIF_REPLACE LPAR string_expression COMMA string_expression COMMA string_expression RPAR
         ;
 builtin_boolean_function
         : BIF_ISNUM LPAR string_expression RPAR
@@ -265,19 +268,20 @@ include
 SCRIPTDIR
 try - except
 try without except
-for
-for each
-namespaces
 sleep
 execute
 file saving, loading and appending (and reading line by line)
 trigonometric functions
-fork
-mutex
-semaphores
+split
 
 features to be *maybe* added:
 ternary operator
+for each
+for
+namespaces
+fork
+mutex
+semaphores
 
 already added:
 == and != for booleans
@@ -286,6 +290,8 @@ random number
 isNumeric(string)
 accept()
 What happens if num "aslkdj" is executed?
+utf8 support
+replace
 
 functions to be added to the stdlib:
 string uppercase

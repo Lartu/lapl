@@ -1,0 +1,11 @@
+# ROT13 encoder in LAPL
+# github.com/lartu/lapl
+
+$alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+$message = "hello there!";
+
+def canRotateChar($char)
+{
+
+}

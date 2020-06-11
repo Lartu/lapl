@@ -1,3 +1,8 @@
+/*
+    THIS WAS TAKEN ALMOST WITHOUT ANY EDITING FROM LDPL
+      IT *NEEDS* TO BE CLEARED AND ORDERED A LITTLE!!
+*/
+
 #ifndef CHTEXT
 #define CHTEXT
 #include <string>
@@ -46,6 +51,8 @@ class chText
     friend chText operator+(const chText &c1, const char * c2);
     friend bool operator<(const chText &c1, const chText &c2);
     friend bool operator>(const chText &c1, const chText &c2);
+    friend bool operator<=(const chText &c1, const chText &c2);
+    friend bool operator>=(const chText &c1, const chText &c2);
     friend bool operator==(const chText& ch1, const chText& ch2);
     friend bool operator==(const chText& ch1, const string& ch2);
     friend bool operator==(const chText& ch1, const char * ch2);
@@ -88,6 +95,8 @@ bool operator==(const char c1, const chText& ch2);
 bool operator==(const chText& ch1, const char c2);
 bool operator<(const chText &c1, const chText &c2);
 bool operator>(const chText &c1, const chText &c2);
+bool operator<=(const chText &c1, const chText &c2);
+bool operator>=(const chText &c1, const chText &c2);
 bool operator!=(const chText& ch1, const chText& ch2);
 chText to_ldpl_string(double x);
 #endif
@@ -455,6 +464,24 @@ bool operator>(const chText &c1, const chText &c2){
     for(size_t i = 0; i < max; ++i){
         if(c1.buffer[i] > c2.buffer[i]) return true;
         else if (c1.buffer[i] < c2.buffer[i]) return false;
+    }
+    return false;
+}
+
+bool operator<=(const chText &c1, const chText &c2){
+    size_t max = c1.buffer.size() > c2.buffer.size() ? c2.buffer.size() : c1.buffer.size();
+    for(size_t i = 0; i < max; ++i){
+        if(c1.buffer[i] <= c2.buffer[i]) return true;
+        else if (c1.buffer[i] >= c2.buffer[i]) return false;
+    }
+    return false;
+}
+
+bool operator>=(const chText &c1, const chText &c2){
+    size_t max = c1.buffer.size() > c2.buffer.size() ? c2.buffer.size() : c1.buffer.size();
+    for(size_t i = 0; i < max; ++i){
+        if(c1.buffer[i] >= c2.buffer[i]) return true;
+        else if (c1.buffer[i] <= c2.buffer[i]) return false;
     }
     return false;
 }
