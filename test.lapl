@@ -1,0 +1,4 @@
+display random() lf;
+display len("Martín") lf;
+display num "-120387.232323232" lf;
+display num "Hola" lf;

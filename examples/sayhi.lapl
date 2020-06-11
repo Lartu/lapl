@@ -1,0 +1,7 @@
+# Say Hi LAPL example
+# github.com/lartu/lapl
+
+display "What's your name?" lf;
+display "> ";
+$name = accept();
+display "Hi there, " $name "!" lf;

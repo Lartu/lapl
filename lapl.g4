@@ -62,6 +62,10 @@ LINEFEED        : 'lf' ;
 CRLF            : 'crlf' ;
 TYPE            : 'type' ;
 VAR             : 'var';
+BIF_LEN         : 'len';
+RANDOM          : 'random';
+ACCEPT          : 'accept';
+BIF_ISNUM       : 'isNumeric';
 // </Reserved words>
 IDENTIFIER      : [a-zA-Z_] [a-zA-Z0-9_]* ;
 NUMBER          : [0-9]+ ('.' [0-9]+)? ;
@@ -117,6 +121,7 @@ number
         ;
 number_expression
         : number
+        | builtin_number_function
         | function_call
         | VARIABLE
         | CEIL_OP number_expression
@@ -131,6 +136,7 @@ number_expression
         ; //Precedence goes from bottom (higher) to top (lower)
 string_expression
         : string
+        | builtin_string_function
         | function_call
         | VARIABLE
         | string_expression INDEX_ACCESS_O number_expression INDEX_ACCESS_C
@@ -138,6 +144,16 @@ string_expression
         | string_expression CONCAT_OP string_expression
         | LPAR string_expression RPAR
         ; 
+builtin_number_function
+        : BIF_LEN LPAR string_expression RPAR
+        | RANDOM LPAR RPAR
+        ;
+builtin_string_function
+        : ACCEPT LPAR RPAR
+        ;
+builtin_boolean_function
+        : BIF_ISNUM LPAR string_expression RPAR
+        ;
 /*array //TODO check
         : ARRAY
         | VARIABLE INDEX_ACCESS_O value INDEX_ACCESS_C
@@ -189,6 +205,7 @@ boolean_value
         ;
 boolean_expr
         : boolean_value
+        | builtin_boolean_function
         | function_call
         | VARIABLE
         | NOT_OP boolean_expr
@@ -204,6 +221,8 @@ boolean_expr
         | number_expression GT_OP number_expression
         | number_expression LE_OP number_expression
         | number_expression GE_OP number_expression
+        | boolean_expr EQ_OP boolean_expr
+        | boolean_expr NEQ_OP boolean_expr
         | boolean_expr OR_OP boolean_expr
         | boolean_expr AND_OP boolean_expr
         | LPAR boolean_expr RPAR
@@ -236,12 +255,12 @@ display_values
 
 /*
 FEATURES TO BE ADDED (in no particular order):
-accept
+Negative values in string slices
+String slices from infinity, to infinity
 arrays
 maps
 pass by reference for maps and arrays
 copy maps and arrays
-ternary operator
 include
 SCRIPTDIR
 try - except
@@ -252,12 +271,23 @@ namespaces
 sleep
 execute
 file saving, loading and appending (and reading line by line)
-string length
-string uppercase
-string lowercase
-random number
 trigonometric functions
 fork
 mutex
 semaphores
+
+features to be *maybe* added:
+ternary operator
+
+already added:
+== and != for booleans
+string length
+random number
+isNumeric(string)
+accept()
+What happens if num "aslkdj" is executed?
+
+functions to be added to the stdlib:
+string uppercase
+string lowercase
 */

@@ -9,11 +9,14 @@
 #include <iostream>
 #include <wordexp.h>
 #include <fstream>
+#include <istream>
 #include "libs/cpptrim.h"
 #include <stdio.h>
 #include <math.h>
 #include <vector>
 #include <unordered_map>
+#include <random>
+#include "libs/chtext.h"
 
 // --- Namespaces ---
 using namespace std;
@@ -34,6 +37,7 @@ typedef double lapl_number;
 typedef char lapl_type;
 class lapl_variable;
 class lapl_function;
+class lapl_string;
 
 
 // --- Global Variables ---
@@ -61,6 +65,8 @@ void setFunction(const string & function_name, const vector<string> & parameters
 lapl_function & getFunction(const string & function_name);
 void printFunctionScope();
 void printVariableScope();
+lapl_number getRandomNumber();
+bool stringIsNumber(const string & text);
 
 // --- Class Definitions ---
 class lapl_variable
@@ -308,6 +314,10 @@ class LaplVisitor : public laplVisitor
             }
             return var.getValue();
         }
+        else if (context->builtin_number_function())
+        {
+            return visit(context->builtin_number_function());
+        }
     }
 
     virtual antlrcpp::Any visitString_expression(laplParser::String_expressionContext *context)
@@ -369,6 +379,10 @@ class LaplVisitor : public laplVisitor
                 error("the variable '" + var_name + "' doesn't hold a string."); //TODO add line number to errors
             }
             return var.getValue();
+        }
+        else if (context->builtin_string_function())
+        {
+            return visit(context->builtin_string_function());
         }
     }
 
@@ -548,6 +562,18 @@ class LaplVisitor : public laplVisitor
             bool value2 = *visit(context->children[2]).as<shared_ptr<bool>>();
             return make_shared<bool>(value1 or value2);
         }
+        else if (context->EQ_OP() and not context->boolean_expr().empty())
+        {
+            bool value1 = *visit(context->children[0]).as<shared_ptr<bool>>();
+            bool value2 = *visit(context->children[2]).as<shared_ptr<bool>>();
+            return make_shared<bool>(value1 == value2);
+        }
+        else if (context->NEQ_OP() and not context->boolean_expr().empty())
+        {
+            bool value1 = *visit(context->children[0]).as<shared_ptr<bool>>();
+            bool value2 = *visit(context->children[2]).as<shared_ptr<bool>>();
+            return make_shared<bool>(value1 != value2);
+        }
         else if (context->EQ_OP() and not context->string_expression().empty())
         {
             string value1 = *visit(context->children[0]).as<shared_ptr<string>>();
@@ -643,6 +669,10 @@ class LaplVisitor : public laplVisitor
             }
             return var.getValue();
         }
+        else if (context->builtin_boolean_function())
+        {
+            return visit(context->builtin_boolean_function());
+        }
     }
 
     virtual antlrcpp::Any visitIf_block(laplParser::If_blockContext *context)
@@ -724,6 +754,42 @@ class LaplVisitor : public laplVisitor
             }
         }
         return nullptr;
+    }
+
+    virtual antlrcpp::Any visitBuiltin_number_function(laplParser::Builtin_number_functionContext *context)
+    {
+        // len(string)
+        if(context->BIF_LEN())
+        {
+            string value = *visit(context->children[2]).as<shared_ptr<string>>();
+            return make_shared<lapl_number>(value.length());
+        }
+        // random()
+        else if(context->RANDOM())
+        {
+            return make_shared<lapl_number>(getRandomNumber());
+        }
+    }
+
+    virtual antlrcpp::Any visitBuiltin_string_function(laplParser::Builtin_string_functionContext *context)
+    {
+        // accept()
+        if(context->ACCEPT())
+        {
+            string s = "";
+            getline(cin, s);
+            return make_shared<string>(s);
+        }
+    }
+
+    virtual antlrcpp::Any visitBuiltin_boolean_function(laplParser::Builtin_boolean_functionContext *context)
+    {
+        // isNumeric(string)
+        if(context->BIF_ISNUM())
+        {
+            string value = *visit(context->children[2]).as<shared_ptr<string>>();
+            return make_shared<bool>(stringIsNumber(value));
+        }
     }
 };
 
@@ -847,7 +913,8 @@ void error(const string & msg)
 
 lapl_number stoln(const string & str)
 {
-    return stod(str);
+    if(stringIsNumber(str)) return stod(str);
+    error("the string '" + str + "' is not numeric and cannot be converted to a number.");
 }
 
 string to_lapl_string(const lapl_number x)
@@ -1033,4 +1100,25 @@ void printVariableScope()
         ++depth;
     }
     cout << "----------------------" << endl;
+}
+
+lapl_number getRandomNumber(){
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_real_distribution<double> dist(0.0, 1.0);
+    lapl_number r = (lapl_number) dist(mt);
+    return r;
+}
+
+bool stringIsNumber(const string & text)
+{
+    try
+    {
+        stod(text);
+    }
+    catch (std::invalid_argument const &)
+    {
+        return false;
+    }
+    return true;
 }
