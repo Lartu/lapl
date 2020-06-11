@@ -252,6 +252,57 @@ fun triplicate($n) $triplicate = $n * 3;
 // use a block for the function body. Function parameters are always
 // declared within the function scope.
 
+/*------------------------*\
+| NUMBER SPECIFIC COMMANDS |
+\*------------------------*/
+
+$n = -23.3; // This is a number
+$n = ceil 1.5; // The ceil operator rounds a number up.
+$n = floor 1.5; // The floor operator rounds a number down.
+$n = 5 + 6; // Add two numbers.
+$n = 5 - 6; // Subtract two numbers.
+$n = 5 * 6; // Multiply two numbers.
+$n = 5 / 6; // Divide two numbers.
+$n = 5 % 6; // % is the modulo operator. The % operator floors both terms before executing.
+$n = 5 ** 6; // Raise a number to a power.
+$n = (5 + 6) * 2; // Parentheses can be used to force precedence.
+$n = num "12"; // Converts a string to a number.
+
+$n = (floor (1.7 ** 2) / 2) * 1 - ceil (8 + $n % 3); // Everything can be combined.
+
+
+/*------------------------*\
+| STRING SPECIFIC COMMANDS |
+\*------------------------*/
+
+$s = "This is a string";
+$s = 'This is also a string';
+
+// All your usual escape sequences can be used within strings.
+
+$s = "Hello"[0]; // Now $s is equal to 'H'.
+$s = "Hello"[1]; // Now $s is equal to 'e'.
+$s = "Hello"[2]; // Now $s is equal to 'l'.
+$s = "Hello"[3, 2]; // Now $s is equal to 'lo' ([from, count]).
+$s = "Hello " & "world!"; // & joins two strings.
+$s = ("Hi there!"[0, 8] & ", how are you") & "?";
+
+/*-------------------------*\
+| BOOLEAN SPECIFIC COMMANDS |
+\*-------------------------*/
+
+$b = true;
+$b = false;
+$b = not $b;
+$b = true and false;
+$b = true or false;
+$b = (true or false) and not false;
+$b = 5 > 7;
+
+// >, <, >=, <=, == and != can be used between numbers.
+// >, <, >=, <=, == and != can be used between strings.
+// == and != can be used between booleans.
+
 /*-------*\
 | EXITING |
 \*-------*/
