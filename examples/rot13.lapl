@@ -1,11 +1,47 @@
 # ROT13 encoder in LAPL
 # github.com/lartu/lapl
 
-$alphabet = "abcdefghijklmnopqrstuvwxyz"
-
-$message = "hello there!";
-
-def canRotateChar($char)
+def rotateChar($char, $rotation)
 {
+    var $upperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var $lowerAlphabet = "abcdefghijklmnopqrstuvwxyz";
+    var $letterCount = len($upperAlphabet);
+    var $i = 0;
 
+    $rotateChar = $char;
+    while $i + 0 < $letterCount
+    {
+        if $upperAlphabet[$i] == $char
+        {
+            $rotateChar = $upperAlphabet[($i + $rotation) % $letterCount];
+            return;
+        }
+        else if $lowerAlphabet[$i] == $char
+        {
+            $rotateChar = $lowerAlphabet[($i + $rotation) % $letterCount];
+            return;
+        }
+        $i = $i + 1;
+    }
 }
+
+def rot13($string)
+{
+    $rot13 = "";
+    var $letterCount = len($string);
+    var $i = 0;
+    while $i + 0 < $letterCount
+    {
+        $rot13 = $rot13 & rotateChar($string[$i], 13);
+        $i = $i + 1;
+    }
+}
+
+$message = 
+"In a village of La Mancha, the name of which I have no desire to call to mind, 
+there lived not long since one of those gentlemen that keep a lance in the lance-rack, an 
+old buckler, a lean hack, and a greyhound for coursing. An olla of rather more beef than mutton, 
+a salad on most nights, scraps on Saturdays, lentils on Fridays, and a pigeon or so extra on 
+Sundays, made away with three-quarters of his income.";
+
+display rot13($message) lf;

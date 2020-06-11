@@ -55,7 +55,7 @@ EXIT            : 'exit' ;
 TRUE            : 'true' ;
 FALSE           : 'false' ;
 RETURN          : 'return' ;
-FUNCTION        : 'fun' ;
+FUNCTION        : 'fun' | 'def' ;
 ARRAY           : 'array' ;
 MAP             : 'map' ;
 LINEFEED        : 'lf' ;
@@ -108,6 +108,7 @@ line_statement
         | exit_statement
         | display_statement
         | value
+        | return_statement
         ) SEMICOLON
         ;
 string
@@ -242,6 +243,9 @@ continue_statement
 break_statement
         : BREAK
         ;
+return_statement
+        : RETURN
+        ;
 exit_statement
         : EXIT
         | EXIT number_expression
@@ -258,42 +262,44 @@ display_values
 
 /*
 FEATURES TO BE ADDED (in no particular order):
-Negative values in string slices
-String slices from infinity, to infinity
-arrays
-maps
-pass by reference for maps and arrays
-copy maps and arrays
-include
-SCRIPTDIR
-try - except
-try without except
-sleep
-execute
-file saving, loading and appending (and reading line by line)
-trigonometric functions
-split
+        BOOLEAN EXPRESSIONS WITH VARIABLES OR FUNCTIONS ON BOTH SIDES
+        arrays
+        maps
+        pass by reference for maps and arrays
+        copy maps and arrays
+        include
+        SCRIPTDIR
+        try - except
+        try without except
+        sleep
+        execute
+        file saving, loading and appending (and reading line by line)
+        trigonometric functions
+        split
 
 features to be *maybe* added:
-ternary operator
-for each
-for
-namespaces
-fork
-mutex
-semaphores
+        ternary operator
+        for each
+        for
+        namespaces
+        fork
+        mutex
+        semaphores
 
 already added:
-== and != for booleans
-string length
-random number
-isNumeric(string)
-accept()
-What happens if num "aslkdj" is executed?
-utf8 support
-replace
+        == and != for booleans
+        string length
+        random number
+        isNumeric(string)
+        accept()
+        What happens if num "aslkdj" is executed?
+        utf8 support
+        replace
+        Negative values in string slices
+        String slices to infinity
+        real return statement
 
 functions to be added to the stdlib:
-string uppercase
-string lowercase
+        string uppercase
+        string lowercase
 */

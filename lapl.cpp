@@ -31,6 +31,7 @@ const string VERSIONNAME = "Amazing Archaeopteryx";
 #define LAPL_NUMBER_EPSILON 0.00000001
 #define EXCEPTION_CONTINUE 0
 #define EXCEPTION_BREAK 1
+#define EXCEPTION_RETURN 2
 
 // --- Custom Types ---
 typedef double lapl_number;
@@ -163,7 +164,16 @@ class LaplVisitor : public laplVisitor
         {
             addVariableScope();
             addFunctionScope();
-            visitChildren(context);
+            try
+            {
+                visitChildren(context);
+            }
+            catch(int e)
+            {
+                delFunctionScope();
+                delVariableScope();
+                throw e;
+            }
             delFunctionScope();
             delVariableScope();
         }
@@ -342,14 +352,20 @@ class LaplVisitor : public laplVisitor
             lapl_string string_value = *visit(context->children[0]).as<shared_ptr<lapl_string>>();
             lapl_number index_val_min = *visit(context->children[2]).as<shared_ptr<lapl_number>>();
             lapl_number index_val_max = *visit(context->children[4]).as<shared_ptr<lapl_number>>();
-            if (index_val_min < 0 or index_val_min >= string_value.length())
+            if (index_val_min < 0)
             {
-                error("string index out of bounds (index " + to_lapl_string(index_val_min) + " for string '" + string_value + "'.");
+                index_val_min = string_value.length() + index_val_min;
             }
-            else if (index_val_max < 0 or index_val_max >= string_value.length())
+            if (index_val_max < 0)
             {
-                error("string index out of bounds (index " + to_lapl_string(index_val_max) + " for string '" + string_value + "'.");
+                index_val_max = string_value.length();
             }
+            if (index_val_min + index_val_max > string_value.length())
+            {
+                index_val_max = string_value.length() - index_val_min;
+            }
+            cout << index_val_min << endl;
+            cout << index_val_max << endl;
             return make_shared<lapl_string>(string_value.substr(index_val_min, index_val_max));
         }
         else if (context->INDEX_ACCESS_O() and context->INDEX_ACCESS_C())
@@ -494,9 +510,16 @@ class LaplVisitor : public laplVisitor
             }
             else if(e == EXCEPTION_BREAK)
             {
-                // Just exit the function
+                error("break cannot be used in this context.");
+            }
+            else if(e == EXCEPTION_RETURN)
+            {
+                // Exit the function
             }
             else {
+                return_value = getVariable(function_return_name).getValue();
+                delFunctionScope();
+                delVariableScope();
                 throw e;
             }
         }
@@ -702,12 +725,17 @@ class LaplVisitor : public laplVisitor
 
     virtual antlrcpp::Any visitContinue_statement(laplParser::Continue_statementContext *context)
     {
-        throw 0;
+       throw EXCEPTION_CONTINUE;
     }
 
     virtual antlrcpp::Any visitBreak_statement(laplParser::Break_statementContext *context)
     {
-        throw 1;
+        throw EXCEPTION_BREAK;
+    }
+
+    virtual antlrcpp::Any visitReturn_statement(laplParser::Return_statementContext *context)
+    {
+        throw EXCEPTION_RETURN;
     }
 
     virtual antlrcpp::Any visitExit_statement(laplParser::Exit_statementContext *context)
@@ -1001,7 +1029,6 @@ void declareVariable(const string & var_name, const antlrcpp::Any & value)
     int last_scope = variable_scope.size() - 1;
     lapl_variable & var = variable_scope[last_scope][var_name];
     var = lapl_variable();
-    lapl_type type = getValueType(value);
     var.setValue(value);
 }
 
@@ -1013,16 +1040,11 @@ void setVariable(const string & var_name, const antlrcpp::Any & value)
         if(scope.find(var_name) != scope.end())
         {
             lapl_variable & var = variable_scope[scope_depth][var_name];
-            lapl_type type = getValueType(value);
             var.setValue(value);
             return;
         }
     }
-    int last_scope = variable_scope.size() - 1;
-    lapl_variable & var = variable_scope[last_scope][var_name];
-    var = lapl_variable();
-    lapl_type type = getValueType(value);
-    var.setValue(value);
+    declareVariable(var_name, value);
 }
 
 bool variableExists(const string & var_name)
@@ -1112,7 +1134,25 @@ void printVariableScope()
             {
                 cout << "..";
             }
-            cout << " " << tuple.first << endl;
+            cout << " " << tuple.first << " = ";
+            lapl_variable var = tuple.second;
+            antlrcpp::Any value_to_print = var.getValue();
+            if (value_to_print.is<shared_ptr<lapl_string>>())
+            {
+                lapl_string string_to_print = *value_to_print.as<shared_ptr<lapl_string>>();
+                cout << string_to_print << flush;
+            }
+            else if (value_to_print.is<shared_ptr<lapl_number>>())
+            {
+                lapl_number number_to_print = *value_to_print.as<shared_ptr<lapl_number>>();
+                cout << to_lapl_string(number_to_print) << flush;
+            }
+            else if (value_to_print.is<shared_ptr<bool>>())
+            {
+                bool boolean_value = *value_to_print.as<shared_ptr<bool>>();
+                cout << (boolean_value ? "true" : "false") << flush;
+            }
+            cout << endl;
         }
         ++depth;
     }
